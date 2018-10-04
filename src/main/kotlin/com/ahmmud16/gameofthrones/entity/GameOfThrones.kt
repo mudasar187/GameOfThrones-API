@@ -41,9 +41,11 @@ class GameOfThrones (
 
         @get:ElementCollection
         @get:NotNull
-        var killed: Set<String>? = setOf(),
+        var siblings: Set<String>? = setOf(),
 
         @get:ElementCollection
+        @get:NotNull
+        var killed: Set<String>? = setOf(),
 
         @get:Id
         @get:GeneratedValue
