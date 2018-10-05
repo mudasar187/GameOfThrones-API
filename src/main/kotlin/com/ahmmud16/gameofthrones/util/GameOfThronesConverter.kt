@@ -8,15 +8,20 @@ class GameOfThronesConverter {
 
     companion object {
 
-        fun convertFromDto(gameOfThronesDto: GameOfThronesDto) : GameOfThrones {
+
+        fun convertFromDto(gameOfThronesDto: GameOfThronesDto): GameOfThrones {
             return GameOfThrones(
-                gameOfThronesDto.characterName!!, gameOfThronesDto.houseName, gameOfThronesDto.characterImageThumb!!,
+                    gameOfThronesDto.characterName!!, gameOfThronesDto.houseName, gameOfThronesDto.characterImageThumb!!,
                     gameOfThronesDto.characterImageFull!!, gameOfThronesDto.parents, gameOfThronesDto.parentsOf,
                     gameOfThronesDto.royal, gameOfThronesDto.siblings, gameOfThronesDto.killed
             )
         }
 
-        fun convertToDto(gameOfThrones: GameOfThrones) : GameOfThronesDto {
+        fun convertFromDto(gameOfThronesDto: Iterable<GameOfThronesDto>): List<GameOfThrones> {
+            return gameOfThronesDto.map { convertFromDto(it) }
+        }
+
+        fun convertToDto(gameOfThrones: GameOfThrones): GameOfThronesDto {
             return GameOfThronesDto(
                     gameOfThrones.id.toString(),
                     gameOfThrones.characterName,
@@ -29,6 +34,10 @@ class GameOfThronesConverter {
                     gameOfThrones.siblings,
                     gameOfThrones.killed
             )
+        }
+
+        fun convertToDto(gameOfThrones: Iterable<GameOfThrones>) : List<GameOfThronesDto> {
+            return gameOfThrones.map { convertToDto(it) }
         }
     }
 

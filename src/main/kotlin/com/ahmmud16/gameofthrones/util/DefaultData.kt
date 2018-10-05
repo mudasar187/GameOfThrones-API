@@ -23,6 +23,6 @@ class DefaultData {
 
         gameofthronesCharacters.forEach{ println(it) }
 
-
+        gameOfThronesService.createCharactersFromJson(gameofthronesCharacters)
     }
 }
