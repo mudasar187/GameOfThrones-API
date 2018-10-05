@@ -1,6 +1,6 @@
 package com.ahmmud16.gameofthrones.util
 
-import com.ahmmud16.gameofthrones.entity.GameOfThronesDTO
+import com.ahmmud16.gameofthrones.models.dto.GameOfThronesDto
 import com.ahmmud16.gameofthrones.service.GameOfThronesService
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
@@ -19,7 +19,7 @@ class DefaultData {
     @PostConstruct
     fun initializeDefault() {
         val reader = JsonReader(FileReader("game-of-thrones.json"))
-        val gameofthronesCharacters: List<GameOfThronesDTO> = Gson().fromJson(reader, object : TypeToken<List<GameOfThronesDTO>>() {}.type)
+        val gameofthronesCharacters: List<GameOfThronesDto> = Gson().fromJson(reader, object : TypeToken<List<GameOfThronesDto>>() {}.type)
 
         gameofthronesCharacters.forEach{ println(it) }
 

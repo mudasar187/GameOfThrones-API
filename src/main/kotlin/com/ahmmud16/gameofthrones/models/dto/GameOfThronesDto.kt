@@ -1,8 +1,8 @@
-package com.ahmmud16.gameofthrones.entity
+package com.ahmmud16.gameofthrones.models.dto
 
 import io.swagger.annotations.ApiModelProperty
 
-data class GameOfThronesDTO(
+data class GameOfThronesDto(
 
         @ApiModelProperty("The id of the character")
         var id: String? = null,

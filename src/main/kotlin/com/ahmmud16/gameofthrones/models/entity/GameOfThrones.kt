@@ -1,4 +1,4 @@
-package com.ahmmud16.gameofthrones.entity
+package com.ahmmud16.gameofthrones.models.entity
 
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
