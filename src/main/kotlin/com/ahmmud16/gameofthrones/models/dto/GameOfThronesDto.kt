@@ -13,7 +13,6 @@ data class GameOfThronesDto(
         @ApiModelProperty("The house(s) where character belong to")
         var houseName: Set<String>? = null,
 
-
         @ApiModelProperty("Thumb image for character")
         var characterImageThumb: String? = null,
 
