@@ -3,7 +3,7 @@ package com.ahmmud16.gameofthrones.models
 import com.ahmmud16.gameofthrones.models.dto.GameOfThronesDto
 import com.ahmmud16.gameofthrones.models.hal.PageDto
 
-class GameOfThronesResponse (
+class GameOfThronesResponses (
         code: Int? = null,
         data: PageDto<GameOfThronesDto>? = null,
         message: String? = null,
