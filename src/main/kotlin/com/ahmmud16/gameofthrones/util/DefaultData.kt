@@ -21,6 +21,7 @@ class DefaultData {
         val reader = JsonReader(FileReader("game-of-thrones.json"))
         val gameofthronesCharacters: List<GameOfThronesDto> = Gson().fromJson(reader, object : TypeToken<List<GameOfThronesDto>>() {}.type)
 
+        println("-----> JSON Data <-----")
         gameofthronesCharacters.forEach{ println(it) }
 
         gameOfThronesService.createCharactersFromJson(gameofthronesCharacters)
