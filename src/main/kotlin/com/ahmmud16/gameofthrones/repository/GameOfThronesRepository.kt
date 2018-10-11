@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface GameOfThronesRepository : CrudRepository<GameOfThrones, Long> {
 
+
 }

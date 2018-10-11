@@ -1,5 +1,6 @@
 package com.ahmmud16.gameofthrones
 
+import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -18,20 +19,11 @@ class GameofthronesApplication
 @Bean
 fun swaggerApi(): Docket {
     return Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo())
             .select()
             .paths(PathSelectors.any())
             .build()
 }
 
-private fun apiInfo(): ApiInfo {
-    return ApiInfoBuilder()
-            .title("API for Game Of Thrones")
-            .description("This is a RestAPI info about Game Of Thrones Characters")
-            .version("1.0.0") // Note the change in version
-            .build()
-}
-
 fun main(args: Array<String>) {
-    runApplication<GameofthronesApplication>(*args)
+    SpringApplication.run(GameofthronesApplication::class.java, *args)
 }
