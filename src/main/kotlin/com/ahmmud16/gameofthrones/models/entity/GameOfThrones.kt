@@ -18,6 +18,14 @@ class GameOfThrones (
         @get:ElementCollection
         var houseName: Set<String>? = setOf(),
 
+        var royal: Boolean? = null,
+
+        @get:ElementCollection
+        var parents: Set<String>? = setOf(),
+
+        @get:ElementCollection
+        var killedBy: Set<String>? = setOf(),
+
         @get:Size(max = 2048)
         var characterImageThumb: String? = null,
 
@@ -25,18 +33,13 @@ class GameOfThrones (
         var characterImageFull: String? = null,
 
         @get:ElementCollection
-        var parents: Set<String>? = setOf(),
+        var killed: Set<String>? = setOf(),
 
         @get:ElementCollection
-        var parentsOf: Set<String>? = setOf(),
-
-        var royal: Boolean? = null,
+        var parentOf: Set<String>? = setOf(),
 
         @get:ElementCollection
         var siblings: Set<String>? = setOf(),
-
-        @get:ElementCollection
-        var killed: Set<String>? = setOf(),
 
         @get:Id
         @get:GeneratedValue
