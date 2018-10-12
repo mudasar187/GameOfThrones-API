@@ -35,19 +35,20 @@ class GameOfThronesController {
 
     @ApiOperation("Get all characters's")
     @GetMapping
-    fun getAll(@ApiParam("Character name")
-               @RequestParam("name", required = false)
-               name : String?,
+    fun getAll(@ApiParam("The name of the character")
+               @RequestParam("characterName", required = false)
+               characterName : String?,
 
-               @ApiParam("Offset in the list of characters")
+               @ApiParam("Offset in the list of game of thrones characters")
                @RequestParam("offset", defaultValue = "0")
                offset: Int,
 
-               @ApiParam("Limit of characters in a single retrieved page")
+               @ApiParam("Limit of game of thrones characters in a single retrieved page")
                @RequestParam("limit", defaultValue = "10")
                limit: Int
     ): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
-        return null!!;
+        return gameOfThronesService.findBy(characterName, offset, limit)
     }
+
 
 }
