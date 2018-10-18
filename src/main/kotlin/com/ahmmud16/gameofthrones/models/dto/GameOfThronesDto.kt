@@ -1,12 +1,14 @@
 package com.ahmmud16.gameofthrones.models.dto
 
 import io.swagger.annotations.ApiModelProperty
+import javax.persistence.Column
 
 data class GameOfThronesDto(
 
+        @Column(updatable = false)
         @ApiModelProperty("The id of the character")
         var id: String? = null,
-
+        
         @ApiModelProperty("The name of the character")
         var characterName: String? = null,
 

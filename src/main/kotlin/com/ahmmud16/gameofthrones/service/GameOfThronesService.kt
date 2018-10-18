@@ -246,7 +246,7 @@ class GameOfThronesService(
 
         gameOfThronesRepository.save(gameOfThrones).id
 
-        return ResponseEntity.status(202).body(
+        return ResponseEntity.status(204).body(
                 GameOfThronesResponse(
                         code = 204,
                         data = convertToDto(gameOfThrones)
