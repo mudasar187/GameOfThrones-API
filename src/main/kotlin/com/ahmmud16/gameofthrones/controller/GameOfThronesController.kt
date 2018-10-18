@@ -62,7 +62,17 @@ class GameOfThronesController {
     fun get(@ApiParam("The id of character")
         @PathVariable("id")
         id: String?) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
-        return gameOfThronesService.findById(id);
+        return gameOfThronesService.findById(id)
+    }
+
+    @ApiOperation("Update all characters with new information")
+    @PutMapping(path = ["/{id}"])
+    fun update(@ApiParam("The id of character")
+        @PathVariable("id")
+        id: String?,
+               @ApiParam("Character data")
+               @RequestBody gameOfThronesDto: GameOfThronesDto) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        return gameOfThronesService.update(id, gameOfThronesDto)
     }
 
 

@@ -31,7 +31,7 @@ class GameOfThronesService(
 
     fun findBy(characterName: String?, search: String?, offset: Int, limit: Int): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
 
-        if (offset < 0 || limit < 1){
+        if (offset < 0 || limit < 1) {
             return ResponseEntity.status(400).body(
                     GameOfThronesResponses(
                             code = 400,
@@ -44,8 +44,8 @@ class GameOfThronesService(
             gameOfThronesRepository.findAll()
         } else if (!characterName.isNullOrBlank() && search.isNullOrBlank()) {
             gameOfThronesRepository.findByCharacterName(characterName!!)
-        } else if(characterName.isNullOrBlank() && !search.isNullOrBlank()) {
-              gameOfThronesRepository.findAllByCharacterNameContainingIgnoreCase(search!!)
+        } else if (characterName.isNullOrBlank() && !search.isNullOrBlank()) {
+            gameOfThronesRepository.findAllByCharacterNameContainingIgnoreCase(search!!)
         } else {
             return ResponseEntity.status(400).body(
                     GameOfThronesResponses(
@@ -55,7 +55,7 @@ class GameOfThronesService(
             )
         }
 
-        if (offset != 0 && offset >= list.count()){
+        if (offset != 0 && offset >= list.count()) {
             return ResponseEntity.status(400).body(
                     GameOfThronesResponses(
                             code = 400,
@@ -77,7 +77,7 @@ class GameOfThronesService(
                 .fromPath("/gameofthrones")
                 .queryParam("limit", limit)
 
-        if (characterName != null){
+        if (characterName != null) {
             uriBuilder = uriBuilder.queryParam("characterName", characterName)
         }
 
@@ -105,8 +105,8 @@ class GameOfThronesService(
         )
     }
 
-    fun createCharacter(gameOfThronesDto: GameOfThronesDto) : ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
-        if(gameOfThronesDto.characterName == null)
+    fun createCharacter(gameOfThronesDto: GameOfThronesDto): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
+        if (gameOfThronesDto.characterName == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     GameOfThronesResponses(
                             code = HttpStatus.BAD_REQUEST.value(),
@@ -119,7 +119,7 @@ class GameOfThronesService(
         try {
             id = gameOfThronesRepository.save(GameOfThronesConverter.convertFromDto(gameOfThronesDto)).id
         } catch (e: Exception) {
-            if(Throwables.getRootCause(e) is ConstraintViolationException) {
+            if (Throwables.getRootCause(e) is ConstraintViolationException) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                         GameOfThronesResponses(
                                 code = HttpStatus.BAD_REQUEST.value(),
@@ -149,16 +149,16 @@ class GameOfThronesService(
         )
     }
 
-    fun findById(idNumber: String?) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+    fun findById(idNumber: String?): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
         val id: Long
 
         try {
             id = idNumber!!.toLong()
         } catch (e: Exception) {
-            val message: String = if(idNumber.equals("undefined")) {
-                "Missing required field: idNumber"
+            val message: String = if (idNumber.equals("undefined")) {
+                "Missing required field: id"
             } else {
-                "Invalid idNumber parameter, This should be a numeric string"
+                "Invalid id parameter, This should be a numeric string"
             }
             return ResponseEntity.status(400).body(
                     GameOfThronesResponse(
@@ -186,5 +186,72 @@ class GameOfThronesService(
                         data = convertToDto(dto)
                 ).validated()
         )
+    }
+
+    fun update(idNumber: String?, gameOfThronesDto: GameOfThronesDto): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        val id: Long
+
+        try {
+            id = idNumber!!.toLong()
+        } catch (e: Exception) {
+            val message: String = if (idNumber.equals("undefined")) {
+                "Missing required field id"
+            } else {
+                "Invalid id parameter, This should be a numeric string"
+            }
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = message
+                    ).validated()
+            )
+        }
+
+        if (!gameOfThronesRepository.existsById(id)) {
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = "Character with id -> $id is not found"
+                    ).validated()
+            )
+        }
+
+        if (gameOfThronesDto.characterName == null || gameOfThronesDto.houseName == null
+                || gameOfThronesDto.royal == null || gameOfThronesDto.parents == null
+                || gameOfThronesDto.killedBy == null || gameOfThronesDto.characterImageThumb == null
+                || gameOfThronesDto.characterImageFull == null || gameOfThronesDto.killed == null
+                || gameOfThronesDto.parentOf == null || gameOfThronesDto.siblings == null) {
+
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = "You are missing one or more required fields"
+                    ).validated()
+            )
+        }
+
+        val gameOfThrones = gameOfThronesRepository.findById(id).get()
+
+        gameOfThrones.characterName = gameOfThronesDto.characterName!!
+        gameOfThrones.houseName = gameOfThronesDto.houseName!!
+        gameOfThrones.royal = gameOfThronesDto.royal!!
+        gameOfThrones.parents = gameOfThronesDto.parents!!
+        gameOfThrones.killedBy = gameOfThronesDto.killedBy!!
+        gameOfThrones.characterImageThumb = gameOfThronesDto.characterImageThumb!!
+        gameOfThrones.characterImageFull = gameOfThronesDto.characterImageFull!!
+        gameOfThrones.killed = gameOfThronesDto.killed!!
+        gameOfThrones.parentOf = gameOfThronesDto.parentOf!!
+        gameOfThrones.siblings = gameOfThronesDto.siblings!!
+
+
+        gameOfThronesRepository.save(gameOfThrones).id
+
+        return ResponseEntity.status(202).body(
+                GameOfThronesResponse(
+                        code = 204,
+                        data = convertToDto(gameOfThrones)
+                ).validated()
+        )
+
     }
 }
