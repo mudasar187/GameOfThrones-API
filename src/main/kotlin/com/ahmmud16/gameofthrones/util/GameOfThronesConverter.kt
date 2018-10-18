@@ -12,8 +12,6 @@ class GameOfThronesConverter {
 
     companion object {
 
-
-
         fun convertFromDto(gameOfThronesDto: GameOfThronesDto): GameOfThrones {
             return GameOfThrones(
                     gameOfThronesDto.characterName!!, gameOfThronesDto.houseName, gameOfThronesDto.royal,
@@ -22,7 +20,7 @@ class GameOfThronesConverter {
             )
         }
 
-        fun convertFromDto(gameOfThronesDto: Iterable<GameOfThronesDto>): List<GameOfThrones> {
+        fun convertFromDtoMap(gameOfThronesDto: Iterable<GameOfThronesDto>): List<GameOfThrones> {
             return gameOfThronesDto.map { convertFromDto(it) }
         }
 
@@ -42,7 +40,7 @@ class GameOfThronesConverter {
             )
         }
 
-        fun covertToDto(gameOfThrones: Iterable<GameOfThrones>) : List<GameOfThronesDto> {
+        fun convertToDtoMap(gameOfThrones: Iterable<GameOfThrones>) : List<GameOfThronesDto> {
             return gameOfThrones.map { convertToDto(it) }
         }
     }

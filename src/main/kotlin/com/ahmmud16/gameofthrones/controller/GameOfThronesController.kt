@@ -10,10 +10,7 @@ import io.swagger.annotations.ApiParam
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 const val BASE_JSON = "application/json;charset=UTF-8"
 
@@ -52,6 +49,12 @@ class GameOfThronesController {
                limit: Int
     ): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         return gameOfThronesService.findBy(characterName, search, offset, limit)
+    }
+
+    @ApiOperation("Create a new character")
+    @PostMapping
+    fun post(@RequestBody gameOfThronesDto: GameOfThronesDto) : ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
+        return gameOfThronesService.createCharacter(gameOfThronesDto);
     }
 
 

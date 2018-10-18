@@ -7,9 +7,14 @@ import com.ahmmud16.gameofthrones.models.hal.HalLink
 import com.ahmmud16.gameofthrones.models.hal.PageDto
 import com.ahmmud16.gameofthrones.repository.GameOfThronesRepository
 import com.ahmmud16.gameofthrones.util.GameOfThronesConverter
+import com.ahmmud16.gameofthrones.util.GameOfThronesConverter.Companion.convertToDto
+import com.google.common.base.Throwables
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
+import java.lang.Exception
+import javax.validation.ConstraintViolationException
 import kotlin.streams.toList
 
 @Service("GameOfThronesService")
@@ -19,7 +24,7 @@ class GameOfThronesService(
 
 
     fun createCharactersFromJson(gameOfThrones: List<GameOfThronesDto>): ResponseEntity<Void> {
-        gameOfThronesRepository.saveAll(GameOfThronesConverter.convertFromDto(gameOfThrones))
+        gameOfThronesRepository.saveAll(GameOfThronesConverter.convertFromDtoMap(gameOfThrones))
         return ResponseEntity.ok().build()
     }
 
@@ -62,7 +67,7 @@ class GameOfThronesService(
                 .stream()
                 .skip(offset.toLong())
                 .limit(limit.toLong())
-                .map { GameOfThronesConverter.convertToDto(it) }
+                .map { convertToDto(it) }
                 .toList().toMutableList()
 
         val dto = PageDto<GameOfThronesDto>(convertedList, offset, limit, list.count())
@@ -94,6 +99,50 @@ class GameOfThronesService(
         return ResponseEntity.ok(
                 GameOfThronesResponses(
                         code = 200,
+                        data = dto
+                ).validated()
+        )
+    }
+
+    fun createCharacter(gameOfThronesDto: GameOfThronesDto) : ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
+        if(gameOfThronesDto.characterName == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    GameOfThronesResponses(
+                            code = HttpStatus.BAD_REQUEST.value(),
+                            message = "You must fill full name of the character"
+                    ).validated()
+            )
+
+        val id: Long?
+
+        try {
+            id = gameOfThronesRepository.save(GameOfThronesConverter.convertFromDto(gameOfThronesDto)).id
+        } catch (e: Exception) {
+            if(Throwables.getRootCause(e) is ConstraintViolationException) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        GameOfThronesResponses(
+                                code = HttpStatus.BAD_REQUEST.value(),
+                                message = "Unable to create a new character due to constraint violation in the submitted DTO"
+                        ).validated()
+                )
+            }
+            throw e
+        }
+
+        val dto = PageDto(
+                list = mutableListOf(GameOfThronesDto(id = id.toString())),
+                totalSize = 1
+        )
+
+        val uriBuilder = UriComponentsBuilder
+                .fromPath("/gotrest/api/${id.toString()}")
+
+        dto._self = HalLink(uriBuilder.cloneBuilder().build().toString())
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                GameOfThronesResponses(
+                        code = HttpStatus.CREATED.value(),
+                        message = "Successfully created new character",
                         data = dto
                 ).validated()
         )
