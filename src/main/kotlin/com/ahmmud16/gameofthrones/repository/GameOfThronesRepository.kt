@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface GameOfThronesRepository : CrudRepository<GameOfThrones, Long> {
 
-    fun findAllByCharacterName(characterName: String): Iterable<GameOfThrones>
+    fun findByCharacterName(characterName: String): Iterable<GameOfThrones>
+
+    fun findAllByCharacterNameContainingIgnoreCase(characterName: String): Iterable<GameOfThrones>
 }

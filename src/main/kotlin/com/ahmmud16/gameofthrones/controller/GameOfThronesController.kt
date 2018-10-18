@@ -33,11 +33,15 @@ class GameOfThronesController {
     private lateinit var gameOfThronesService: GameOfThronesService
 
 
-    @ApiOperation("Get all characters's")
+    @ApiOperation("Get character's")
     @GetMapping
-    fun getAll(@ApiParam("The name of the character")
+    fun getAll(@ApiParam("Find a character by full name")
                @RequestParam("characterName", required = false)
                characterName : String?,
+
+               @ApiParam("Search for all character contains the string in their characternames")
+               @RequestParam("search", required = false)
+               search : String?,
 
                @ApiParam("Offset in the list of game of thrones characters")
                @RequestParam("offset", defaultValue = "0")
@@ -47,7 +51,7 @@ class GameOfThronesController {
                @RequestParam("limit", defaultValue = "10")
                limit: Int
     ): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
-        return gameOfThronesService.findBy(characterName, offset, limit)
+        return gameOfThronesService.findBy(characterName, search, offset, limit)
     }
 
 

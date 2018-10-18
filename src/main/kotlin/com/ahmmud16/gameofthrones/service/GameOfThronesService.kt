@@ -23,7 +23,7 @@ class GameOfThronesService(
         return ResponseEntity.ok().build()
     }
 
-    fun findBy(characterName: String?, offset: Int, limit: Int): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
+    fun findBy(characterName: String?, search: String?, offset: Int, limit: Int): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
 
         if (offset < 0 || limit < 1){
             return ResponseEntity.status(400).body(
@@ -34,17 +34,19 @@ class GameOfThronesService(
             )
         }
 
-        val list = if (characterName.isNullOrBlank()) {
+        val list = if (characterName.isNullOrBlank() && search.isNullOrBlank()) {
             gameOfThronesRepository.findAll()
-        } else if (!characterName.isNullOrBlank()) {
+        } else if (!characterName.isNullOrBlank() && search.isNullOrBlank()) {
+            gameOfThronesRepository.findByCharacterName(characterName!!)
+        } else if(characterName.isNullOrBlank() && !search.isNullOrBlank()) {
+              gameOfThronesRepository.findAllByCharacterNameContainingIgnoreCase(search!!)
+        } else {
             return ResponseEntity.status(400).body(
                     GameOfThronesResponses(
                             code = 400,
                             message = "You can only use one of the filters at a time."
                     ).validated()
             )
-        } else {
-            gameOfThronesRepository.findAllByCharacterName(characterName!!)
         }
 
         if (offset != 0 && offset >= list.count()){
