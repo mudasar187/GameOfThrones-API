@@ -1,5 +1,6 @@
 package com.ahmmud16.gameofthrones.service
 
+import com.ahmmud16.gameofthrones.models.GameOfThronesResponse
 import com.ahmmud16.gameofthrones.models.GameOfThronesResponses
 import com.ahmmud16.gameofthrones.models.WrappedResponse
 import com.ahmmud16.gameofthrones.models.dto.GameOfThronesDto
@@ -144,6 +145,45 @@ class GameOfThronesService(
                         code = HttpStatus.CREATED.value(),
                         message = "Successfully created new character",
                         data = dto
+                ).validated()
+        )
+    }
+
+    fun findById(idNumber: String?) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        val id: Long
+
+        try {
+            id = idNumber!!.toLong()
+        } catch (e: Exception) {
+            val message: String = if(idNumber.equals("undefined")) {
+                "Missing required field: idNumber"
+            } else {
+                "Invalid idNumber parameter, This should be a numeric string"
+            }
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = message
+                    ).validated()
+            )
+        }
+
+        val dto = gameOfThronesRepository
+                .findById(id)
+                .orElse(null) ?: return ResponseEntity
+                .status(404)
+                .body(
+                        GameOfThronesResponse(
+                                code = 400,
+                                message = "Character with id -> $id is not found"
+                        ).validated()
+                )
+
+        return ResponseEntity.ok(
+                GameOfThronesResponse(
+                        code = 200,
+                        message = "Character with id: $id was successfully found",
+                        data = convertToDto(dto)
                 ).validated()
         )
     }

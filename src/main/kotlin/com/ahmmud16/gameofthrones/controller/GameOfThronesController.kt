@@ -57,5 +57,13 @@ class GameOfThronesController {
         return gameOfThronesService.createCharacter(gameOfThronesDto);
     }
 
+    @ApiOperation("Get a single character by id")
+    @GetMapping(path = ["/{id}"])
+    fun get(@ApiParam("The id of character")
+        @PathVariable("id")
+        id: String?) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        return gameOfThronesService.findById(id);
+    }
+
 
 }

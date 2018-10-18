@@ -11,4 +11,6 @@ interface GameOfThronesRepository : CrudRepository<GameOfThrones, Long> {
     fun findByCharacterName(characterName: String): Iterable<GameOfThrones>
 
     fun findAllByCharacterNameContainingIgnoreCase(characterName: String): Iterable<GameOfThrones>
+
+    fun findById(id: String) : Iterable<GameOfThrones>
 }
