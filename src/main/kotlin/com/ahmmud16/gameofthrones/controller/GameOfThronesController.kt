@@ -75,5 +75,15 @@ class GameOfThronesController {
         return gameOfThronesService.update(id, gameOfThronesDto)
     }
 
+    @ApiOperation("Update part of the characters data")
+    @PatchMapping(path = ["/{id}"])
+    fun patch(@ApiParam("The id of character")
+        @PathVariable("id")
+        id: String?,
+              @ApiParam("The partial patch")
+              @RequestBody jsonPatch: String) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        return gameOfThronesService.patch(id, jsonPatch);
+    }
+
 
 }

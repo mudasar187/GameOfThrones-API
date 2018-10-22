@@ -16,6 +16,7 @@ class GameOfThrones (
         var characterName: String,
 
         @get:ElementCollection
+        @get:NotNull
         var houseName: Set<String>? = setOf(),
 
         var royal: Boolean? = null,

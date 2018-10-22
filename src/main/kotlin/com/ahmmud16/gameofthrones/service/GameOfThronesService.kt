@@ -9,13 +9,14 @@ import com.ahmmud16.gameofthrones.models.hal.PageDto
 import com.ahmmud16.gameofthrones.repository.GameOfThronesRepository
 import com.ahmmud16.gameofthrones.util.GameOfThronesConverter
 import com.ahmmud16.gameofthrones.util.GameOfThronesConverter.Companion.convertToDto
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.base.Throwables
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.util.UriComponentsBuilder
-import java.lang.Exception
 import javax.validation.ConstraintViolationException
+import org.springframework.web.util.UriComponentsBuilder
 import kotlin.streams.toList
 
 @Service("GameOfThronesService")
@@ -35,7 +36,7 @@ class GameOfThronesService(
             return ResponseEntity.status(400).body(
                     GameOfThronesResponses(
                             code = 400,
-                            message = "offset has to be a positive number and limit har to be 1 or greater."
+                            message = "Offset has to be a positive number and limit har to be 1 or greater."
                     ).validated()
             )
         }
@@ -175,14 +176,14 @@ class GameOfThronesService(
                 .body(
                         GameOfThronesResponse(
                                 code = 400,
-                                message = "Character with id -> $id is not found"
+                                message = "Character with id $id is not found"
                         ).validated()
                 )
 
         return ResponseEntity.ok(
                 GameOfThronesResponse(
                         code = 200,
-                        message = "Character with id: $id was successfully found",
+                        message = "Character with id $id was successfully found",
                         data = convertToDto(dto)
                 ).validated()
         )
@@ -211,7 +212,7 @@ class GameOfThronesService(
             return ResponseEntity.status(400).body(
                     GameOfThronesResponse(
                             code = 400,
-                            message = "Character with id -> $id is not found"
+                            message = "Character with id $id is not found"
                     ).validated()
             )
         }
@@ -254,4 +255,173 @@ class GameOfThronesService(
         )
 
     }
+
+    fun patch(idNumber: String?, jsonBody: String): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+
+        val id: Long
+
+        try {
+            id = idNumber!!.toLong()
+        } catch (e: Exception) {
+            val message: String = if (idNumber.equals("undefined")) {
+                "Missing required field id"
+            } else {
+                "Invalid id parameter, This should be a numeric string"
+            }
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = message
+                    ).validated()
+            )
+        }
+
+        if (!gameOfThronesRepository.existsById(id)) {
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = "Character with id $id is not found"
+                    ).validated()
+            )
+        }
+
+        val jackson = ObjectMapper()
+
+        val jsonNode: JsonNode
+
+        try {
+            jsonNode = jackson.readValue(jsonBody, JsonNode::class.java)
+        } catch (e: Exception) {
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = "Invalid JSON object"
+                    ).validated()
+            )
+        }
+
+        if (jsonNode.has("id")) {
+            return ResponseEntity.status(409).body(
+                    GameOfThronesResponse(
+                            code = 409,
+                            message = "You are not allowed to change the id"
+                    ).validated()
+            )
+        }
+
+
+        val gameOfThrones = gameOfThronesRepository.findById(id).get()
+
+        if (jsonNode.has("characterName")) {
+            val characterName = jsonNode.get("characterName")
+            if (characterName.isTextual) {
+                gameOfThrones.characterName = characterName.asText()
+            } else {
+                return jsonFieldErrorMessage("characterName", "String")
+            }
+        }
+
+
+
+        if (jsonNode.has("houseName")) {
+            val houseName = jsonNode.get("houseName")
+            when {
+                houseName.isNull -> gameOfThrones.houseName = null
+                houseName.isArray -> gameOfThrones.houseName = houseName.toSet().map { it.asText() }.toSet()
+                else -> return jsonFieldErrorMessage("houseName", "Array")
+            }
+        }
+
+        if (jsonNode.has("royal")) {
+            val royal = jsonNode.get("royal")
+            if (royal.isBoolean) {
+                gameOfThrones.royal = royal.asBoolean()
+            } else {
+                return jsonFieldErrorMessage("royal", "Boolean")
+            }
+        }
+
+        if (jsonNode.has("parents")) {
+            val parents = jsonNode.get("parents")
+            when {
+                parents.isNull -> gameOfThrones.parents = null
+                parents.isArray -> gameOfThrones.parents = parents.toSet().map { it.asText() }.toSet()
+                else -> return jsonFieldErrorMessage("parents", "Array")
+            }
+        }
+
+        if (jsonNode.has("killedBy")) {
+            val killedBy = jsonNode.get("killedBy")
+            when {
+                killedBy.isNull -> gameOfThrones.killedBy = null
+                killedBy.isArray -> gameOfThrones.killedBy = killedBy.toSet().map { it.asText() }.toSet()
+                else -> return jsonFieldErrorMessage("killedBy", "Array")
+            }
+        }
+
+        if (jsonNode.has("characterImageThumb")) {
+            val characterImageThumb = jsonNode.get("characterImageThumb")
+            if (characterImageThumb.isTextual) {
+                gameOfThrones.characterImageThumb = characterImageThumb.asText()
+            } else {
+                return jsonFieldErrorMessage("characterImageThumb", "String")
+            }
+        }
+
+        if (jsonNode.has("characterImageFull")) {
+            val characterImageFull = jsonNode.get("characterImageFull")
+            if (characterImageFull.isTextual) {
+                gameOfThrones.characterImageFull = characterImageFull.asText()
+            } else {
+                return jsonFieldErrorMessage("characterImageFull", "String")
+            }
+        }
+
+        if (jsonNode.has("killed")) {
+            val killed = jsonNode.get("killed")
+            when {
+                killed.isNull -> gameOfThrones.killed = null
+                killed.isArray -> gameOfThrones.killed = killed.toSet().map { it.asText() }.toSet()
+                else -> return jsonFieldErrorMessage("killed", "Array")
+            }
+        }
+
+        if (jsonNode.has("parentOf")) {
+            val parentOf = jsonNode.get("parentOf")
+            when {
+                parentOf.isNull -> gameOfThrones.parentOf = null
+                parentOf.isArray -> gameOfThrones.parentOf = parentOf.toSet().map { it.asText() }.toSet()
+                else -> return jsonFieldErrorMessage("parentOf", "Array")
+            }
+        }
+
+        if (jsonNode.has("siblings")) {
+            val siblings = jsonNode.get("siblings")
+            when {
+                siblings.isNull -> gameOfThrones.siblings = null
+                siblings.isArray -> gameOfThrones.siblings = siblings.toSet().map { it.asText() }.toSet()
+                else -> return jsonFieldErrorMessage("siblings", "Array")
+            }
+        }
+
+
+        gameOfThronesRepository.save(gameOfThrones).id
+
+        return ResponseEntity.status(204).body(
+                GameOfThronesResponse(
+                        code = 204,
+                        data = convertToDto(gameOfThrones)
+                ).validated()
+        )
+    }
+
+}
+
+private fun jsonFieldErrorMessage(field: String, type: String): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+    return ResponseEntity.status(400).body(
+            GameOfThronesResponse(
+                    code = 400,
+                    message = "Invalid field type of $field, this should be a valid JSON field of type $type"
+            ).validated()
+    )
 }
