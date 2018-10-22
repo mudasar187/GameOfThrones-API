@@ -19,7 +19,7 @@ class Security : WebSecurityConfigurerAdapter() {
         http
                 .authorizeRequests()
                 .antMatchers("/*").permitAll()
-                .antMatchers("/api/gameofthrones").permitAll()
+                .antMatchers("/gotrest/api/").permitAll()
                 .and()
                 .cors().disable()
                 .csrf().disable()

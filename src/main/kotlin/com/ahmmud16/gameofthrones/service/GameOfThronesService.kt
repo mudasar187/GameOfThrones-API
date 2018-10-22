@@ -415,13 +415,49 @@ class GameOfThronesService(
         )
     }
 
-}
 
-private fun jsonFieldErrorMessage(field: String, type: String): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
-    return ResponseEntity.status(400).body(
-            GameOfThronesResponse(
-                    code = 400,
-                    message = "Invalid field type of $field, this should be a valid JSON field of type $type"
-            ).validated()
-    )
+    private fun jsonFieldErrorMessage(field: String, type: String): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        return ResponseEntity.status(400).body(
+                GameOfThronesResponse(
+                        code = 400,
+                        message = "Invalid field type of $field, this should be a valid JSON field of type $type"
+                ).validated()
+        )
+    }
+
+    fun delete(idNumber: String?): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        val id: Long
+
+        try {
+            id = idNumber!!.toLong()
+        } catch (e: Exception) {
+            val message: String = if (idNumber.equals("undefined")) {
+                "Missing required field: id"
+            } else {
+                "Invalid num parameter, This should be a numeric string"
+            }
+            return ResponseEntity.status(400).body(
+                    GameOfThronesResponse(
+                            code = 400,
+                            message = message
+                    ).validated()
+            )
+        }
+
+        if (!gameOfThronesRepository.existsById(id)) {
+            return ResponseEntity.status(404).body(
+                    GameOfThronesResponse(
+                            code = 404,
+                            message = "Character with id $idNumber is not found in our database"
+                    ).validated()
+            )
+        }
+
+        gameOfThronesRepository.deleteById(id)
+        return ResponseEntity.status(204).body(
+                GameOfThronesResponse(
+                        code = 204
+                ).validated()
+        )
+    }
 }

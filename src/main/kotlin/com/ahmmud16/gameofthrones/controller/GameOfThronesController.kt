@@ -85,5 +85,13 @@ class GameOfThronesController {
         return gameOfThronesService.patch(id, jsonPatch);
     }
 
+    @ApiOperation("Delete a character by id")
+    @DeleteMapping(path = ["/{id}"])
+    fun delete(@ApiParam("The id of the character")
+               @PathVariable("id")
+               id: String?) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        return gameOfThronesService.delete(id)
+    }
+
 
 }
