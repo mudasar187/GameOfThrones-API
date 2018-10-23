@@ -11,16 +11,16 @@ data class GameOfThronesDto(
         var characterName: String? = null,
 
         @ApiModelProperty("The house(s) where character belong to")
-        var houseName: Set<String>? = null,
+        var houseName: MutableSet<String>? = null,
 
         @ApiModelProperty("Royal")
         var royal: Boolean? = null,
 
         @ApiModelProperty("Character's parents")
-        var parents: Set<String>? = null,
+        var parents: MutableSet<String>? = null,
 
         @ApiModelProperty("Killed by")
-        var killedBy: Set<String>? = null,
+        var killedBy: MutableSet<String>? = null,
 
         @ApiModelProperty("Thumb image for character")
         var characterImageThumb: String? = null,
@@ -29,12 +29,12 @@ data class GameOfThronesDto(
         var characterImageFull: String? = null,
 
         @ApiModelProperty("Who they killed")
-        var killed: Set<String>? = null,
+        var killed: MutableSet<String>? = null,
 
         @ApiModelProperty("Parent of")
-        var parentOf: Set<String>? = null,
+        var parentOf: MutableSet<String>? = null,
 
         @ApiModelProperty("Their siblings")
-        var siblings: Set<String>? = null
+        var siblings: MutableSet<String>? = null
 
 )

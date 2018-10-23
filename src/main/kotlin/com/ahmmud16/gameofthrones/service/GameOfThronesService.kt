@@ -327,7 +327,7 @@ class GameOfThronesService(
             val houseName = jsonNode.get("houseName")
             when {
                 houseName.isNull -> gameOfThrones.houseName = null
-                houseName.isArray -> gameOfThrones.houseName = houseName.toSet().map { it.asText() }.toSet()
+                houseName.isArray -> gameOfThrones.houseName = houseName.asIterable().map { it.asText() }.toMutableSet()
                 else -> return jsonFieldErrorMessage("houseName", "Array")
             }
         }
@@ -345,7 +345,7 @@ class GameOfThronesService(
             val parents = jsonNode.get("parents")
             when {
                 parents.isNull -> gameOfThrones.parents = null
-                parents.isArray -> gameOfThrones.parents = parents.toSet().map { it.asText() }.toSet()
+                parents.isArray -> gameOfThrones.parents = parents.asIterable().map { it.asText() }.toMutableSet()
                 else -> return jsonFieldErrorMessage("parents", "Array")
             }
         }
@@ -354,7 +354,7 @@ class GameOfThronesService(
             val killedBy = jsonNode.get("killedBy")
             when {
                 killedBy.isNull -> gameOfThrones.killedBy = null
-                killedBy.isArray -> gameOfThrones.killedBy = killedBy.toSet().map { it.asText() }.toSet()
+                killedBy.isArray -> gameOfThrones.killedBy = killedBy.asIterable().map { it.asText() }.toMutableSet()
                 else -> return jsonFieldErrorMessage("killedBy", "Array")
             }
         }
@@ -381,7 +381,7 @@ class GameOfThronesService(
             val killed = jsonNode.get("killed")
             when {
                 killed.isNull -> gameOfThrones.killed = null
-                killed.isArray -> gameOfThrones.killed = killed.toSet().map { it.asText() }.toSet()
+                killed.isArray -> gameOfThrones.killed = killed.asIterable().map { it.asText() }.toMutableSet()
                 else -> return jsonFieldErrorMessage("killed", "Array")
             }
         }
@@ -390,7 +390,7 @@ class GameOfThronesService(
             val parentOf = jsonNode.get("parentOf")
             when {
                 parentOf.isNull -> gameOfThrones.parentOf = null
-                parentOf.isArray -> gameOfThrones.parentOf = parentOf.toSet().map { it.asText() }.toSet()
+                parentOf.isArray -> gameOfThrones.parentOf = parentOf.asIterable().map { it.asText() }.toMutableSet()
                 else -> return jsonFieldErrorMessage("parentOf", "Array")
             }
         }
@@ -399,7 +399,7 @@ class GameOfThronesService(
             val siblings = jsonNode.get("siblings")
             when {
                 siblings.isNull -> gameOfThrones.siblings = null
-                siblings.isArray -> gameOfThrones.siblings = siblings.toSet().map { it.asText() }.toSet()
+                siblings.isArray -> gameOfThrones.siblings = siblings.asIterable().map { it.asText() }.toMutableSet()
                 else -> return jsonFieldErrorMessage("siblings", "Array")
             }
         }
@@ -434,7 +434,7 @@ class GameOfThronesService(
             val message: String = if (idNumber.equals("undefined")) {
                 "Missing required field: id"
             } else {
-                "Invalid num parameter, This should be a numeric string"
+                "Invalid id number parameter, This should be a numeric string"
             }
             return ResponseEntity.status(400).body(
                     GameOfThronesResponse(
