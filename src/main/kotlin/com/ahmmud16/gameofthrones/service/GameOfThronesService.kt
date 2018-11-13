@@ -15,13 +15,15 @@ import com.google.common.base.Throwables
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
 import javax.validation.ConstraintViolationException
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.streams.toList
 
 @Service("GameOfThronesService")
 class GameOfThronesService(
-        val gameOfThronesRepository: GameOfThronesRepository
+        val gameOfThronesRepository: GameOfThronesRepository,
+        val restTemplate: RestTemplate
 ) {
 
 
@@ -98,7 +100,9 @@ class GameOfThronesService(
                     .build().toString())
         }
 
-        return ResponseEntity.ok(
+        val etag = convertedList.hashCode().toString()
+
+        return ResponseEntity.status(200).eTag(etag).body(
                 GameOfThronesResponses(
                         code = 200,
                         data = dto
