@@ -1,7 +1,6 @@
 package com.ahmmud16.gameofthrones.service
 
 import com.ahmmud16.gameofthrones.models.GameOfThronesResponse
-import com.ahmmud16.gameofthrones.models.GameOfThronesResponses
 import com.ahmmud16.gameofthrones.models.WrappedResponse
 import com.ahmmud16.gameofthrones.models.dto.GameOfThronesDto
 import com.ahmmud16.gameofthrones.models.hal.HalLink
@@ -36,7 +35,7 @@ class GameOfThronesService(
 
         if (offset < 0 || limit < 1) {
             return ResponseEntity.status(400).body(
-                    GameOfThronesResponses(
+                    GameOfThronesResponse(
                             code = 400,
                             message = "Offset has to be a positive number and limit har to be 1 or greater."
                     ).validated()
@@ -51,7 +50,7 @@ class GameOfThronesService(
             gameOfThronesRepository.findAllByCharacterNameContainingIgnoreCase(search!!)
         } else {
             return ResponseEntity.status(400).body(
-                    GameOfThronesResponses(
+                    GameOfThronesResponse(
                             code = 400,
                             message = "You can only use one of the filters at a time."
                     ).validated()
@@ -60,7 +59,7 @@ class GameOfThronesService(
 
         if (offset != 0 && offset >= list.count()) {
             return ResponseEntity.status(400).body(
-                    GameOfThronesResponses(
+                    GameOfThronesResponse(
                             code = 400,
                             message = "Your offset is larger than the number of elements returned by your request."
                     )
@@ -103,7 +102,7 @@ class GameOfThronesService(
         val etag = convertedList.hashCode().toString()
 
         return ResponseEntity.status(200).eTag(etag).body(
-                GameOfThronesResponses(
+                GameOfThronesResponse(
                         code = 200,
                         data = dto
                 ).validated()
@@ -113,7 +112,7 @@ class GameOfThronesService(
     fun createCharacter(gameOfThronesDto: GameOfThronesDto): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         if (gameOfThronesDto.characterName == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GameOfThronesResponses(
+                    GameOfThronesResponse(
                             code = HttpStatus.BAD_REQUEST.value(),
                             message = "You must fill full name of the character"
                     ).validated()
@@ -126,7 +125,7 @@ class GameOfThronesService(
         } catch (e: Exception) {
             if (Throwables.getRootCause(e) is ConstraintViolationException) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                        GameOfThronesResponses(
+                        GameOfThronesResponse(
                                 code = HttpStatus.BAD_REQUEST.value(),
                                 message = "Unable to create a new character due to constraint violation in the submitted DTO"
                         ).validated()
@@ -146,7 +145,7 @@ class GameOfThronesService(
         dto._self = HalLink(uriBuilder.cloneBuilder().build().toString())
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                GameOfThronesResponses(
+                GameOfThronesResponse(
                         code = HttpStatus.CREATED.value(),
                         message = "Successfully created new character",
                         data = dto
@@ -154,7 +153,7 @@ class GameOfThronesService(
         )
     }
 
-    fun findById(idNumber: String?): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+    fun findById(idNumber: String?): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         val id: Long
 
         try {
@@ -184,16 +183,18 @@ class GameOfThronesService(
                         ).validated()
                 )
 
+        val dtoData = PageDto(mutableListOf(convertToDto(dto)))
+
         return ResponseEntity.ok(
                 GameOfThronesResponse(
                         code = 200,
                         message = "Character with id $id was successfully found",
-                        data = convertToDto(dto)
+                        data = dtoData
                 ).validated()
         )
     }
 
-    fun update(idNumber: String?, gameOfThronesDto: GameOfThronesDto): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+    fun update(idNumber: String?, gameOfThronesDto: GameOfThronesDto): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         val id: Long
 
         try {
@@ -251,16 +252,18 @@ class GameOfThronesService(
 
         gameOfThronesRepository.save(gameOfThrones).id
 
-        return ResponseEntity.status(204).body(
+        val dtoData = PageDto(mutableListOf(convertToDto(gameOfThrones)))
+
+        return ResponseEntity.status(201).body(
                 GameOfThronesResponse(
-                        code = 204,
-                        data = convertToDto(gameOfThrones)
+                        code = 201,
+                        data = dtoData
                 ).validated()
         )
 
     }
 
-    fun patch(idNumber: String?, jsonBody: String): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+    fun patch(idNumber: String?, jsonBody: String): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
 
         val id: Long
 
@@ -411,16 +414,18 @@ class GameOfThronesService(
 
         gameOfThronesRepository.save(gameOfThrones).id
 
+        val dtoData = PageDto(mutableListOf(convertToDto(gameOfThrones)))
+
         return ResponseEntity.status(204).body(
                 GameOfThronesResponse(
                         code = 204,
-                        data = convertToDto(gameOfThrones)
+                        data = dtoData
                 ).validated()
         )
     }
 
 
-    private fun jsonFieldErrorMessage(field: String, type: String): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+    private fun jsonFieldErrorMessage(field: String, type: String): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         return ResponseEntity.status(400).body(
                 GameOfThronesResponse(
                         code = 400,
@@ -429,7 +434,7 @@ class GameOfThronesService(
         )
     }
 
-    fun delete(idNumber: String?): ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+    fun delete(idNumber: String?): ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         val id: Long
 
         try {

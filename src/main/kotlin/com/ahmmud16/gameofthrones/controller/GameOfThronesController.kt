@@ -61,7 +61,7 @@ class GameOfThronesController {
     @GetMapping(path = ["/{id}"])
     fun get(@ApiParam("The id of character")
         @PathVariable("id")
-        id: String?) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+        id: String?) : ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         return gameOfThronesService.findById(id)
     }
 
@@ -71,7 +71,7 @@ class GameOfThronesController {
         @PathVariable("id")
         id: String?,
                @ApiParam("Character data")
-               @RequestBody gameOfThronesDto: GameOfThronesDto) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+               @RequestBody gameOfThronesDto: GameOfThronesDto) : ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         return gameOfThronesService.update(id, gameOfThronesDto)
     }
 
@@ -81,7 +81,7 @@ class GameOfThronesController {
         @PathVariable("id")
         id: String?,
               @ApiParam("The partial patch")
-              @RequestBody jsonPatch: String) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+              @RequestBody jsonPatch: String) : ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         return gameOfThronesService.patch(id, jsonPatch);
     }
 
@@ -89,7 +89,7 @@ class GameOfThronesController {
     @DeleteMapping(path = ["/{id}"])
     fun delete(@ApiParam("The id of the character")
                @PathVariable("id")
-               id: String?) : ResponseEntity<WrappedResponse<GameOfThronesDto>> {
+               id: String?) : ResponseEntity<WrappedResponse<PageDto<GameOfThronesDto>>> {
         return gameOfThronesService.delete(id)
     }
 

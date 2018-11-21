@@ -1,10 +1,11 @@
 package com.ahmmud16.gameofthrones.models
 
 import com.ahmmud16.gameofthrones.models.dto.GameOfThronesDto
+import com.ahmmud16.gameofthrones.models.hal.PageDto
 
 class GameOfThronesResponse(
         code: Int? = null,
-        data: GameOfThronesDto? = null,
+        data: PageDto<GameOfThronesDto>? = null,
         message: String? = null,
         status: WrappedResponse.ResponseStatus? = null
-) : WrappedResponse<GameOfThronesDto>(code, data, message, status)
+) : WrappedResponse<PageDto<GameOfThronesDto>>(code, data, message, status)
