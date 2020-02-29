@@ -25,3 +25,4 @@ You'll need:
 -   In foot folder run: `mvn clean install`
 -   Start Spring application
 -   Enter this link [Swagger](http://localhost:8080/gotrest/api/swagger-ui.html) to handle all HTTP from browser
+
